@@ -10,7 +10,7 @@ import time
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Frame, ttk,Menu, Label,messagebox 
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Frame, ttk,Menu, Label,messagebox, filedialog
 
 
 
@@ -21,6 +21,7 @@ ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Houndini\Desktop\build\assets\frame0
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
+file = None
 
 # Function to check for internet connection 
 def internet_connection():
@@ -31,6 +32,11 @@ def internet_connection():
     # If there is a connection error return False
     except requests.ConnectionError:
             return False
+
+def create_dir():
+      #Check if path already exists before saving the file 
+    if not Path.exists(Path.home() / 'Documents' / 'Scrapped_lyrics'):
+        Path.mkdir(Path.home() / 'Documents' / 'Scrapped_lyrics')
 
 window = Tk()
 
@@ -79,7 +85,82 @@ def fetch_data():
     thread.start()
 
 
+def open_lyrics():
+    global file
+    create_dir()
+    file = filedialog.askopenfilename(
+        filetypes=[('Text Files', '*.txt'), ('All Files', '*.*')],
+        title='Open Lyrics File',
+        # Set the initial directory to the user's Documents directory "Scrapped_lyrics"
+        # Set the path depending on the OS and the user's username
+        initialdir=Path.home() / 'Documents' / 'Scrapped_lyrics',
+        defaultextension='.txt'
+        
+        )
+    if file:
+        with open(file, 'r') as f:
+            lyrics = f.read()
+            entry_1.delete('1.0', 'end')
+            entry_1.insert('1.0', lyrics)
+            feedback_label.config(text='Lyrics loaded successfully!', foreground='green')
+    else:
+        feedback_label.config(text='No file selected!', foreground='red')
 
+
+def save_lyrics():
+    global file
+    create_dir()
+    lyrics = entry_1.get('1.0', 'end').strip()
+    if not lyrics:
+        feedback_label.config(text='No lyrics to save!', foreground='red')
+        return
+    try:
+        if not file:
+            file = filedialog.asksaveasfilename(
+                filetypes=[('Text Files', '*.txt'), ('All Files', '*.*')],
+                title='Save Lyrics As',
+                # Set the initial directory to the user's Documents directory "Scrapped_lyrics"
+                # Set the path depending on the OS and the user's username
+                initialdir=Path.home() / 'Documents' / 'Scrapped_lyrics',
+                defaultextension='.txt'
+            )
+        if file:
+            with open(file, 'w') as f:
+                f.write(lyrics)
+            feedback_label.config(text='Lyrics saved successfully!', foreground='green')
+    except Exception as e:
+        feedback_label.config(text='Error saving lyrics!', foreground='red')
+        messagebox.showerror(title='Error', message=f'An error occurred while saving the lyrics: {e}')
+
+
+def save_as_lyrics():
+    global file
+    create_dir()
+    lyrics = entry_1.get('1.0', 'end').strip()
+    if not lyrics:
+        feedback_label.config(text='No lyrics to save!', foreground='red')
+        return
+    try:
+        file = filedialog.asksaveasfilename(
+            filetypes=[('Text Files', '*.txt'), ('All Files', '*.*')],
+            title='Save Lyrics As',
+            
+            initialdir=Path.home(),
+            defaultextension='.txt'
+        )
+       
+    except Exception as e:
+        feedback_label.config(text='Error saving lyrics!', foreground='red')
+        messagebox.showerror(title='Error', message=f'An error occurred while saving the lyrics: {e}')
+
+# Function to close the window
+def on_closing():
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        window.destroy()
+    
+
+#Check if user close the window with the 'x' button
+window.protocol("WM_DELETE_WINDOW", on_closing)
 
 
 
@@ -91,11 +172,11 @@ window.configure(bg = "#E6E6E6")
 #Setup menu bar
 menubar = Menu(window)
 file = Menu(menubar, tearoff=0)
-file.add_command(label="Open")
-file.add_command(label="Save")
-file.add_command(label="Save as...")
+file.add_command(label="Open", command=open_lyrics)
+file.add_command(label="Save", command=save_lyrics)
+file.add_command(label="Save as...", command=save_lyrics)
 file.add_separator()
-file.add_command(label="Exit", command=window.quit)
+file.add_command(label="Exit", command=on_closing)
 menubar.add_cascade(label="File", menu=file)
 
 window.config(menu=menubar)
