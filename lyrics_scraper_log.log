@@ -1,0 +1,61 @@
+2024-12-31 14:58:36,494 - === Starting Lyrics Scraper from MusicXMatch ===
+2024-12-31 14:58:36,496 - === Opening the Browser ===
+2024-12-31 14:58:36,497 - ====== WebDriver manager ======
+2024-12-31 14:58:40,764 - Get LATEST chromedriver version for google-chrome
+2024-12-31 14:58:41,249 - Get LATEST chromedriver version for google-chrome
+2024-12-31 14:58:41,683 - Get LATEST chromedriver version for google-chrome
+2024-12-31 14:58:42,978 - WebDriver version 131.0.6778.204 selected
+2024-12-31 14:58:42,982 - Modern chrome version https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.204/win32/chromedriver-win32.zip
+2024-12-31 14:58:42,982 - About to download new driver from https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.204/win32/chromedriver-win32.zip
+2024-12-31 14:58:43,458 - Driver downloading response is 200
+2024-12-31 15:00:24,685 - Get LATEST chromedriver version for google-chrome
+2024-12-31 15:00:28,292 - Driver has been saved in cache [C:\Users\Houndini\.wdm\drivers\chromedriver\win64\131.0.6778.204]
+2024-12-31 15:00:56,708 - === Navigating to Musixmatch ===
+2024-12-31 15:01:04,407 - Search bar found !
+2024-12-31 15:01:04,408 - Searching lyrics for: bad and boujee by migos 
+2024-12-31 15:01:04,408 - === Checking if 'See All' button exists ===
+2024-12-31 15:01:09,590 - === Clicking on the 'See All' button ===
+2024-12-31 15:01:14,831 - === Finding Track Cards ===
+2024-12-31 15:01:14,903 - === Looping through all cards ===
+2024-12-31 15:01:15,196 - === Track Found! Navigating to lyrics page ===
+2024-12-31 15:01:26,565 - === Loading Lyrics ===
+2024-12-31 15:01:26,566 - === Loading Lyrics for french language
+2024-12-31 15:01:33,845 - === Retrieving Lyrics ===
+2024-12-31 15:01:34,141 - === Lyrics Retrieved Successfully ===
+2024-12-31 15:01:34,141 - === Closing Browser ===
+2024-12-31 15:01:40,981 - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001B04F73F8F0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it')': /session/126dabf1cd4c868eef301b9e12a419b1
+2024-12-31 15:01:45,031 - Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001B04F73F5C0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it')': /session/126dabf1cd4c868eef301b9e12a419b1
+2024-12-31 15:01:49,080 - Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001B04F73F440>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it')': /session/126dabf1cd4c868eef301b9e12a419b1
+2024-12-31 15:05:57,256 - === Starting Lyrics Scraper from MusicXMatch ===
+2024-12-31 15:05:57,258 - === Opening the Browser ===
+2024-12-31 15:05:57,259 - ====== WebDriver manager ======
+2024-12-31 15:07:38,368 - Get LATEST chromedriver version for google-chrome
+2024-12-31 15:07:38,886 - Get LATEST chromedriver version for google-chrome
+2024-12-31 15:07:39,294 - Driver [C:\Users\Houndini\.wdm\drivers\chromedriver\win64\131.0.6778.204\chromedriver-win32/chromedriver.exe] found in cache
+2024-12-31 15:08:45,896 - === Navigating to Musixmatch ===
+2024-12-31 15:08:59,622 - Search bar found !
+2024-12-31 15:08:59,622 - Searching lyrics for: calling my spirit by kodak black 
+2024-12-31 15:08:59,623 - === Checking if 'See All' button exists ===
+2024-12-31 15:09:02,254 - === Clicking on the 'See All' button ===
+2024-12-31 15:09:08,101 - === Finding Track Cards ===
+2024-12-31 15:09:08,304 - === Looping through all cards ===
+2024-12-31 15:09:08,883 - === Track Found! Navigating to lyrics page ===
+2024-12-31 15:09:13,599 - === Loading Lyrics ===
+2024-12-31 15:09:13,600 - === Loading Lyrics for french language
+2024-12-31 15:09:21,014 - === Retrieving Lyrics ===
+2024-12-31 15:09:21,265 - === Lyrics Retrieved Successfully ===
+2024-12-31 15:09:21,267 - === Closing Browser ===
+2024-12-31 15:09:28,472 - Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001B04F73C440>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it')': /session/09d5f2d346b658d63914cbe4b728d1c9
+2024-12-31 15:09:32,566 - Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001B04F73F440>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it')': /session/09d5f2d346b658d63914cbe4b728d1c9
+2024-12-31 15:09:36,654 - Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001B04F73C680>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it')': /session/09d5f2d346b658d63914cbe4b728d1c9
+2024-12-31 15:11:53,208 - === Starting Lyrics Scraper from MusicXMatch ===
+2024-12-31 15:11:53,210 - === Opening the Browser ===
+2024-12-31 15:11:53,211 - ====== WebDriver manager ======
+2024-12-31 15:11:59,802 - Get LATEST chromedriver version for google-chrome
+2024-12-31 15:12:00,143 - Get LATEST chromedriver version for google-chrome
+2024-12-31 15:12:00,443 - Driver [C:\Users\Houndini\.wdm\drivers\chromedriver\win64\131.0.6778.204\chromedriver-win32/chromedriver.exe] found in cache
+2024-12-31 15:12:26,333 - === Navigating to Musixmatch ===
+2024-12-31 15:12:33,372 - Search bar found !
+2024-12-31 15:12:33,372 - Searching lyrics for: calling my spirit by kodak black 
+2024-12-31 15:12:33,375 - === Checking if 'See All' button exists ===
+2024-12-31 15:12:33,774 - === Clicking on the 'See All' button ===
