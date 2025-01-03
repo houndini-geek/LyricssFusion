@@ -6,6 +6,8 @@
 from pathlib import Path
 import requests
 from threading import Thread
+import pyperclip
+from keyboard import add_hotkey
 import time
 
 # from tkinter import *
@@ -13,15 +15,7 @@ import time
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Frame, ttk,Menu, Label,messagebox, filedialog
 
 
-
-OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Houndini\Desktop\build\assets\frame0")
-
-
-def relative_to_assets(path: str) -> Path:
-    return ASSETS_PATH / Path(path)
-
-file = None
+file_path = None
 
 # Function to check for internet connection 
 def internet_connection():
@@ -44,7 +38,14 @@ window = Tk()
 
 # Function to fetch data in a thread
 def fetch_data():
-    from scrappers.musicxmatch_scrapper import scrape_lyrics
+    if not internet_connection():
+         messagebox.showwarning(title='Network error',message='LyricsFusion needs a network connection to work')
+         feedback_label.config(text='No network connection' ,foreground='red')
+         print("LyricsFuion needs a network connection to work")
+         return
+        
+    from scrappers.musicxmatch_scrapper import  scrape_from_musicxmatch
+    from scrappers.genius_scrapper import scrape_from_genius
     artist = artist_name.get().strip().lower()
     track = track_name.get().strip().lower()
     translation = lyrics_translation.get().strip().lower()
@@ -65,18 +66,32 @@ def fetch_data():
             for i in range(3):
                 feedback_label.config(text=f"Searching{'.' * (i + 1)}")
                 time.sleep(0.5)
-            if internet_connection():
-             results =  scrape_lyrics(artist_name=artist, track_name=track, lyrics_lang=translation)
-             #Display lyrics to the text area 
-             entry_1.delete('1.0', 'end')
-             entry_1.insert('1.0', results['lyrics'])
-             feedback_label.config(text='Lyrics found!', foreground='green')
-             return
-            else:
-               messagebox.showwarning(title='Network error',message='Lyrics scraper needs a network connection to work')
-               feedback_label.config(text='No network connection')
-               print("Lyrics scraper needs a network connection to work")
-               return
+                # Scrape from Musicxmatch
+                try:
+                    musicxmatch_lyrics = scrape_from_musicxmatch(artist_name=artist, track_name=track, lyrics_lang=translation)
+                    #Display lyrics to the text area 
+                    if  musicxmatch_lyrics['lyrics']:
+                        entry_1.delete('1.0', 'end')
+                        entry_1.insert('1.0',  musicxmatch_lyrics['lyrics'])
+                        feedback_label.config(text='Lyrics found!', foreground='green')
+                    else:
+                        response = messagebox.askyesno(title="Search lyrics from Genius", message='Lyrics not found on MusicXMatch, Would you like to search lyrics from Genius ?')
+                        if response:
+                            genius_lyrics = scrape_from_genius(artist,track)
+                            if genius_lyrics['lyrics']:
+                                 entry_1.delete('1.0', 'end')
+                                 entry_1.insert('1.0',  genius_lyrics['lyrics'])
+                                 feedback_label.config(text='Lyrics found!', foreground='green')
+                            else:
+                                feedback_label.config(text='Lyrics not found!', foreground='red') 
+
+                  
+                except Exception as e:
+                    feedback_label.config(text='Error fetching lyrics!', foreground='red')
+                    messagebox.showerror(title='Error', message=f'An error occurred while fetching the lyrics: {e}')
+                    return
+    
+                return              
         finally:
             # Re-enable the submit button
             submit_btn.after(0,submit_btn.config(state='normal'))
@@ -86,9 +101,9 @@ def fetch_data():
 
 
 def open_lyrics():
-    global file
+    global file_path
     create_dir()
-    file = filedialog.askopenfilename(
+    file_path = filedialog.askopenfilename(
         filetypes=[('Text Files', '*.txt'), ('All Files', '*.*')],
         title='Open Lyrics File',
         # Set the initial directory to the user's Documents directory "Scrapped_lyrics"
@@ -97,8 +112,8 @@ def open_lyrics():
         defaultextension='.txt'
         
         )
-    if file:
-        with open(file, 'r') as f:
+    if file_path:
+        with open(file_path, 'r') as f:
             lyrics = f.read()
             entry_1.delete('1.0', 'end')
             entry_1.insert('1.0', lyrics)
@@ -108,26 +123,34 @@ def open_lyrics():
 
 
 def save_lyrics():
-    global file
+    global file_path
     create_dir()
     lyrics = entry_1.get('1.0', 'end').strip()
     if not lyrics:
         feedback_label.config(text='No lyrics to save!', foreground='red')
         return
-    try:
-        if not file:
-            file = filedialog.asksaveasfilename(
+    if not file_path:
+        try:
+            file_path = filedialog.asksaveasfilename(
                 filetypes=[('Text Files', '*.txt'), ('All Files', '*.*')],
-                title='Save Lyrics As',
-                # Set the initial directory to the user's Documents directory "Scrapped_lyrics"
-                # Set the path depending on the OS and the user's username
+                title='Save Lyrics',
                 initialdir=Path.home() / 'Documents' / 'Scrapped_lyrics',
                 defaultextension='.txt'
             )
-        if file:
-            with open(file, 'w') as f:
+            with open(file_path, 'w') as f:
                 f.write(lyrics)
             feedback_label.config(text='Lyrics saved successfully!', foreground='green')
+        except Exception as e:
+            feedback_label.config(text='Error saving lyrics!', foreground='red')
+            messagebox.showerror(title='Error', message=f'An error occurred while saving the lyrics: {e}')
+        return
+    
+
+    
+    try:
+        with open(file_path, 'w') as f:
+            f.write(lyrics)
+        feedback_label.config(text='Lyrics saved successfully!', foreground='green')
     except Exception as e:
         feedback_label.config(text='Error saving lyrics!', foreground='red')
         messagebox.showerror(title='Error', message=f'An error occurred while saving the lyrics: {e}')
@@ -153,6 +176,20 @@ def save_as_lyrics():
         feedback_label.config(text='Error saving lyrics!', foreground='red')
         messagebox.showerror(title='Error', message=f'An error occurred while saving the lyrics: {e}')
 
+# Function to copy lyrics to clipboard
+def copy_to_clipboard():
+    lyrics = entry_1.get('1.0', 'end').strip()
+    if not lyrics:
+        feedback_label.config(text='No lyrics to copy!', foreground='red')
+        return
+    try:
+        pyperclip.copy(lyrics)
+        feedback_label.config(text='Lyrics copied to clipboard!', foreground='green')
+    except Exception as e:
+        feedback_label.config(text='Error copying lyrics!', foreground='red')
+        messagebox.showerror(title='Error', message=f'An error occurred while copying the lyrics: {e}')
+
+
 # Function to close the window
 def on_closing():
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
@@ -163,22 +200,37 @@ def on_closing():
 window.protocol("WM_DELETE_WINDOW", on_closing)
 
 
+# Add a hotkey to copy lyrics to clipboard, save, save as and open lyrics, close app, Enter key press to start searching..
+add_hotkey('enter', fetch_data)
+add_hotkey('ctrl+s', save_lyrics)
+add_hotkey('ctrl+shift+s', save_as_lyrics)
+add_hotkey('ctrl+o', open_lyrics)
+add_hotkey('ctrl+c', copy_to_clipboard)
+add_hotkey('ctrl+q', on_closing)
 
-window.geometry("1296x716")
+
+
+
+window.geometry("1270x650")
 window.title("LyricsFusion")
 window.configure(bg = "#E6E6E6")
 
 
 #Setup menu bar
-menubar = Menu(window)
-file = Menu(menubar, tearoff=0)
-file.add_command(label="Open", command=open_lyrics)
-file.add_command(label="Save", command=save_lyrics)
-file.add_command(label="Save as...", command=save_lyrics)
+menubar = Menu(window, bg="#E6E6E6", fg="#000716", font=('Arial', 12))
+file = Menu(menubar, tearoff=0, bg="#E6E6E6", fg="#000716", font=('Arial', 12))
+file.add_command(label="Open -> ctrl + o", command=open_lyrics)
+file.add_command(label="Save -> ctrl + s", command=save_lyrics)
+file.add_command(label="Save as... -> ctrl + shift + s", command=save_lyrics)
 file.add_separator()
-file.add_command(label="Exit", command=on_closing)
+file.add_command(label="Exit -> ctrl + q", command=on_closing)
 menubar.add_cascade(label="File", menu=file)
 
+option_menu = Menu(menubar, tearoff=0, bg="#E6E6E6", fg="#000716", font=('Arial', 12))
+option_menu.add_command(label="Export to PDF")
+option_menu.add_command(label="Copy to clipboard -> ctrl + c",command=copy_to_clipboard)
+option_menu.add_command(label="Help")
+menubar.add_cascade(label="Options", menu=option_menu)
 window.config(menu=menubar)
 
 
@@ -193,13 +245,6 @@ canvas = Canvas(
 )
 
 canvas.place(x = 0, y = 0)
-entry_image_1 = PhotoImage(
-    file=relative_to_assets("entry_1.png"))
-entry_bg_1 = canvas.create_image(
-    959.5,
-    358.0,
-    image=entry_image_1
-)
 
 
 
@@ -212,7 +257,7 @@ entry_1 = Text(
     pady=7,
     bg="#DEDEDE",
     fg="#000716",
-    font=('Franklin Gothic Medium', 12),
+    font=('Franklin Gothic Medium', 15),
     highlightthickness=0,
 )
 
@@ -226,7 +271,7 @@ scrollbar = ttk.Scrollbar(
 scrollbar.place(
     x=12.0,
     y=12.0,
-    height=690.0
+    height=600.0
 )
 entry_1['yscrollcommand'] = scrollbar.set
 
@@ -234,7 +279,7 @@ entry_1.place(
     x=664.0,
     y=12.0,
     width=591.0,
-    height=690.0
+    height=600.0
 )
 
 canvas.create_text(
@@ -336,11 +381,12 @@ feedback_label.place(
 )
 
 
-button_image_1 = PhotoImage(
-    file=relative_to_assets("button_1.png"))
 
 submit_btn = Button(
-    image=button_image_1,
+    text='Search Lyrics',
+    bg="#000716",
+    fg="#FFFFFF",
+    font=("Arial", 15),
     borderwidth=0,
     highlightthickness=0,
     command=fetch_data,

@@ -49,7 +49,7 @@ def is_match(scraped_name, input_name, threshold=80):
 
 
 #######################################################
-def scrape_lyrics(artist_name, track_name, lyrics_lang):
+def scrape_from_musicxmatch(artist_name, track_name, lyrics_lang):
     logging.info("=== Starting Lyrics Scraper from MusicXMatch ===")
    
     try:
@@ -95,12 +95,14 @@ def scrape_lyrics(artist_name, track_name, lyrics_lang):
     try:
         print(Fore.GREEN + "=== Checking if 'See All' button exists ===")
         logging.info("=== Checking if 'See All' button exists ===")
-        see_all_btn = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[2]/div/div[2]/div[3]/div[1]/div[2]/div/div/div[3]/div')))
-        if see_all_btn.is_displayed():
+        see_all_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '#__next > div > div > div > div:nth-child(1) > div > div > div > div.css-175oi2r.r-1smwm8v > div > div.css-175oi2r.r-12kyg2d.r-11c0sde > div.css-175oi2r.r-2o02ov > div:nth-child(1) > div.css-175oi2r.r-61z16t > div > div > div.css-175oi2r.r-1awozwy.r-18u37iz > div')))
+        print(see_all_btn.text)
+        if see_all_btn.text.lower() == "see all":
             print(Fore.GREEN + "=== Clicking on the 'See All' button ===")
             logging.info("=== Clicking on the 'See All' button ===")
             see_all_btn.click()
         else:
+            #document.querySelector("")
             print(Fore.YELLOW + "=== 'See All' button not displayed, skipping ===")
             logging.info("=== 'See All' button not displayed, skipping ===")
     except TimeoutException:
@@ -150,10 +152,13 @@ def scrape_lyrics(artist_name, track_name, lyrics_lang):
             message=f"Couldn't find lyrics for the track: {track_name}\nCheck the spelling and try again."
         )
         logging.info(f"Couldn't find lyrics for the track: {track_name}\nCheck the spelling and try again.")
-        return
-        # response = messagebox.askyesno(title="Search lyrics from Genius", message='Lyrics not found on MusicXMatch, Would you like to search lyrics from Genius ?')
-        # if response == 'yes':
-        #     #scrape_from_genius(artist_name,track_name)
+        lyrics = {
+                "artist": None,
+                "track": None,
+                "lyrics": None
+            }
+        browser.quit()
+        return lyrics
 
     try:
         print(Fore.GREEN + "=== Loading Lyrics ===")
@@ -205,9 +210,9 @@ def scrape_lyrics(artist_name, track_name, lyrics_lang):
         try:
             parent_verse = wait.until(EC.presence_of_element_located((By.XPATH, '/html/body/div[1]/div/div/div/div[1]/div/div[1]/div[1]/div[2]/div/div/div[2]/div')))
             lyrics = {
-                "artist": artist_name,
-                "track": track_name,
-                "lyrics": parent_verse.text + '\n'
+                "artist": artist_name if artist_name else "Artist not found!",
+                "track": track_name if track_name else "Track not found!",
+                "lyrics": parent_verse.text + '\n' if parent_verse.text else "Lyrics not found!"
             }
             print(Fore.GREEN + "=== Lyrics Retrieved Successfully ===")
             logging.info("=== Lyrics Retrieved Successfully ===")
