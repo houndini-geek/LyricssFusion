@@ -227,9 +227,9 @@ file.add_command(label="Exit -> ctrl + q", command=on_closing)
 menubar.add_cascade(label="File", menu=file)
 
 option_menu = Menu(menubar, tearoff=0, bg="#E6E6E6", fg="#000716", font=('Arial', 12))
-option_menu.add_command(label="Export to PDF")
+#option_menu.add_command(label="Export to PDF")
 option_menu.add_command(label="Copy to clipboard -> ctrl + c",command=copy_to_clipboard)
-option_menu.add_command(label="Help")
+#option_menu.add_command(label="Help")
 menubar.add_cascade(label="Options", menu=option_menu)
 window.config(menu=menubar)
 

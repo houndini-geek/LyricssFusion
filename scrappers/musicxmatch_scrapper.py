@@ -26,17 +26,19 @@ from time  import sleep
 
 import logging
 
-
+# Save log information to a file called 'lyrics_scraper_log.log' in the same directory as the script file 
+# and set the logging level to INFO to log all messages with level INFO and above to the file. 
 def setup_logging():
     """Set up logging with fresh logs for every new search."""
     # Clear the log file by opening it in write mode ('w') at the start
     with open('lyrics_scraper_log.log', 'w'):
-        pass  # This clears the content of the file
+        pass
+
 setup_logging()
 
 # Configure logging
 logging.basicConfig(
-    filename='lyrics_scraper_log.log',
+    filename='lyrics_scraper_log.log', 
     level=logging.INFO,
     format='%(asctime)s - %(message)s',
 )
